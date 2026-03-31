@@ -42,6 +42,7 @@ npm install express cors multer dotenv @supabase/supabase-js pdfkit uuid
 npm install -D typescript ts-node @types/express @types/multer @types/node @types/cors @types/uuid nodemon
 npx tsc --init
 ```
+DONE
 
 ### 2. Frontend Setup
 ```bash
