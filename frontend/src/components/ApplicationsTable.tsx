@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Application, approveApplication } from '@/lib/api';
+import { Application, approveApplication, rejectApplication } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Loader2 } from 'lucide-react';
@@ -8,6 +8,7 @@ import { ExternalLink, Loader2 } from 'lucide-react';
 interface Props {
   applications: Application[];
   onApproved: (updated: Application) => void;
+  onRejected: (updated: Application) => void;
 }
 
 function StatusBadge({ status }: { status: Application['status'] }) {
@@ -40,9 +41,10 @@ function DocLink({ url, label }: { url: string | null; label: string }) {
   );
 }
 
-export default function ApplicationsTable({ applications, onApproved }: Props) {
+export default function ApplicationsTable({ applications, onApproved, onRejected }: Props) {
   const { t } = useTranslation();
   const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
 
   const handleApprove = async (id: string) => {
     setApprovingId(id);
@@ -53,6 +55,18 @@ export default function ApplicationsTable({ applications, onApproved }: Props) {
       console.error('Approve failed:', err);
     } finally {
       setApprovingId(null);
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    setRejectingId(id);
+    try {
+      const res = await rejectApplication(id);
+      onRejected(res.data.application);
+    } catch (err) {
+      console.error('Reject failed:', err);
+    } finally {
+      setRejectingId(null);
     }
   };
 
@@ -103,20 +117,37 @@ export default function ApplicationsTable({ applications, onApproved }: Props) {
               </td>
               <td className="px-4 py-3">
                 {app.status === 'Pending' && (
-                  <Button
-                    size="sm"
-                    onClick={() => handleApprove(app.id)}
-                    disabled={approvingId === app.id}
-                  >
-                    {approvingId === app.id ? (
-                      <>
-                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                        {t('action_approving')}
-                      </>
-                    ) : (
-                      t('action_approve')
-                    )}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleApprove(app.id)}
+                      disabled={approvingId === app.id || rejectingId === app.id}
+                    >
+                      {approvingId === app.id ? (
+                        <>
+                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                          {t('action_approving')}
+                        </>
+                      ) : (
+                        t('action_approve')
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleReject(app.id)}
+                      disabled={rejectingId === app.id || approvingId === app.id}
+                    >
+                      {rejectingId === app.id ? (
+                        <>
+                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                          {t('action_rejecting')}
+                        </>
+                      ) : (
+                        t('action_reject')
+                      )}
+                    </Button>
+                  </div>
                 )}
               </td>
             </tr>

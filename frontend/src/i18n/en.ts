@@ -78,6 +78,8 @@ const en = {
 
     action_approve: 'Approve',
     action_approving: 'Approving…',
+    action_reject: 'Reject',
+    action_rejecting: 'Rejecting…',
     action_view_lease: 'View Lease',
     action_view_doc: 'View',
   },

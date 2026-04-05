@@ -33,3 +33,6 @@ export const fetchApplications = () =>
 
 export const approveApplication = (id: string) =>
   api.patch<{ message: string; application: Application }>(`/api/applications/${id}/approve`);
+
+export const rejectApplication = (id: string) =>
+  api.patch<{ message: string; application: Application }>(`/api/applications/${id}/reject`);

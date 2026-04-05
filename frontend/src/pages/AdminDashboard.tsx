@@ -39,10 +39,17 @@ export default function AdminDashboard() {
     );
   };
 
+  const handleRejected = (updated: Application) => {
+    setApplications(prev =>
+      prev.map(app => (app.id === updated.id ? updated : app))
+    );
+  };
+
   const counts = {
     total: applications.length,
     pending: applications.filter(a => a.status === 'Pending').length,
     approved: applications.filter(a => a.status === 'Approved').length,
+    rejected: applications.filter(a => a.status === 'Rejected').length,
   };
 
   return (
@@ -66,11 +73,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Stats ── */}
-      <div className="mb-6 grid grid-cols-3 gap-4">
+      <div className="mb-6 grid grid-cols-4 gap-4">
         {[
           { label: 'Total', value: counts.total, color: 'text-foreground' },
           { label: t('status_pending'), value: counts.pending, color: 'text-yellow-600' },
           { label: t('status_approved'), value: counts.approved, color: 'text-green-600' },
+          { label: t('status_rejected'), value: counts.rejected, color: 'text-red-600' },
         ].map(s => (
           <div key={s.label} className="rounded-lg border bg-card p-4 text-center shadow-sm">
             <div className={`text-3xl font-bold ${s.color}`}>{s.value}</div>
@@ -89,7 +97,7 @@ export default function AdminDashboard() {
       ) : applications.length === 0 ? (
         <p className="py-12 text-center text-muted-foreground">{t('dashboard_empty')}</p>
       ) : (
-        <ApplicationsTable applications={applications} onApproved={handleApproved} />
+        <ApplicationsTable applications={applications} onApproved={handleApproved} onRejected={handleRejected} />
       )}
     </div>
   );

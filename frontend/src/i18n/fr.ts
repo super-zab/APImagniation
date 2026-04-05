@@ -78,6 +78,8 @@ const fr = {
 
     action_approve: 'Approuver',
     action_approving: 'Approbation…',
+    action_reject: 'Refuser',
+    action_rejecting: 'Refus…',
     action_view_lease: 'Voir le bail',
     action_view_doc: 'Voir',
   },
